@@ -14,11 +14,11 @@ PurrPrompt is a native Bash implementation that utilizes raw ANSI escape sequenc
 
 ## ![Features](https://img.shields.io/badge/-Architecture_%26_Features-cba6f7?style=for-the-badge)
 
-- **Pure Bash Execution:** Prompt rendering relies entirely on `PROMPT_COMMAND` array execution and variable assignment. Zero external binary calls are made for the prompt string assembly itself.
-- **Palette Compliance:** Hardcoded ANSI sequences mapped exactly to Catppuccin Mocha hex values.
-- **State Management (`__PURR_STATE`):** Implements a state machine to track terminal clearing events (`clear`), preventing duplicate visual separators or `\n` artifacts that plague standard multiline Bash prompts.
-- **Synchronous Git Parsing:** Evaluates `git rev-parse` and `git status --porcelain` to indicate branch and dirty state via Nerd Font glyphs.
-- **Execution Code Hook:** Captures `$?` prior to prompt rendering to toggle the prompt arrow color (Success/Failure).
+- **Pure Bash Execution:** The prompt assembly uses only Bash built‑ins, with no external binary calls.  
+- **Palette Compliance:** Colors follow the Catppuccin Mocha palette exactly.  
+- **State Management:** Terminal clearing events are tracked to avoid duplicate separators and unwanted newline artifacts.  
+- **Synchronous Git Parsing:** Git branch and dirty state are displayed using Nerd Font glyphs.  
+- **Execution Code Hook:** The prompt arrow color changes to indicate success or failure of the previous command.
 
 ## ![Dependencies](https://img.shields.io/badge/-Dependencies-94e2d5?style=for-the-badge)
 
