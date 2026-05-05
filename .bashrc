@@ -117,7 +117,10 @@ purrprompt_builder() {
         PROMPT_ARROW="${RED}❯${RESET}"
     fi
 
-    PS1="${BG_S0}${TEAL}  \A ${OVERLAY}│ ${PINK} \u ${OVERLAY}@ ${BLUE}󰒋 \h ${OVERLAY}│ ${YELLOW} \w${GIT_SEG}${STATUS} ${RESET}${FG_S0}${RR}\n${PROMPT_ARROW} "
+    local FIRST_LINE="${BG_S0}${TEAL}  \A ${OVERLAY}│ ${PINK} \u ${OVERLAY}@ ${BLUE}󰒋 \h ${OVERLAY}│ ${YELLOW} \w${GIT_SEG}${STATUS} ${RESET}${FG_S0}${RR}"
+    printf "%s\n" "${FIRST_LINE@P}"
+
+    PS1="${PROMPT_ARROW} "
 }
 
 PROMPT_COMMAND=purrprompt_builder
