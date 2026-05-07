@@ -14,10 +14,10 @@
 
 | Category | Features |
 | :--- | :--- |
-| **✿ Aesthetics** | **Catppuccin Mocha** palette <br> • Rounded powerline caps <br> • Nerd Font icons <br> • Seamless data bar |
-| **⌬ Intelligence** | **Git integration** (dirty state detection) <br> • **Command timing** (≥1s) <br> • **Background jobs** count <br> • **Exit code** badges |
+| **✿ Aesthetics** | **Catppuccin Mocha** palette <br> • Rounded powerline caps <br> • Nerd Font icons <br> • Seamless data bar <br> • Fresh launch `pfetch` integration |
+| **⌬ Intelligence** | **Git integration** (dirty state detection) <br> • **Millisecond-precision command timing** <br> • **Background jobs** count <br> • **Exit code** badges |
 | **☇ Performance** | **Pure Bash** (no subshells/binaries) <br> • **Zero-Redraw Autocomplete** <br> • State-managed prompt clearing |
-| **⌨ Workflow** | Prefix-based **history search** (`Up`/`Down`) <br> • Case-insensitive **tab completion** <br> • High-contrast `LS_COLORS` |
+| **⌨ Workflow** | Prefix-based **history search** (`Up`/`Down`) <br> • Case-insensitive **tab completion** <br> • Clean single-row autocomplete interface |
 
 ---
 

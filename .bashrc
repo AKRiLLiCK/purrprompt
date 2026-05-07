@@ -34,7 +34,7 @@ alias grep='grep --color=auto'
 alias clear='clear; __PURR_STATE=2'
 alias c='clear'
 
-PS0='${__PURR_CMD_START:+}$(: "${__PURR_CMD_START:=$EPOCHREALTIME}")'
+PS0='${__PURR_CMD_START:=$EPOCHREALTIME}\e[1K\r'
 
 purrprompt_builder() {
     local EXIT_CODE=$?
@@ -55,15 +55,41 @@ purrprompt_builder() {
     local DURATION_STR=""
     if [[ -n "$__PURR_CMD_START" ]]; then
         local NOW=$EPOCHREALTIME
-        local ELAPSED=$(( ${NOW%.*} - ${__PURR_CMD_START%.*} ))
-        if (( ELAPSED >= 1 )); then
-            if (( ELAPSED >= 3600 )); then
-                DURATION_STR=" $((ELAPSED/3600))h$((ELAPSED%3600/60))m"
-            elif (( ELAPSED >= 60 )); then
-                DURATION_STR=" $((ELAPSED/60))m$((ELAPSED%60))s"
-            else
-                DURATION_STR=" ${ELAPSED}s"
-            fi
+        local START_SEC=${__PURR_CMD_START%%[.,]*}
+        local START_MICRO=${__PURR_CMD_START#*[.,]}
+        local NOW_SEC=${NOW%%[.,]*}
+        local NOW_MICRO=${NOW#*[.,]}
+
+        START_MICRO="${START_MICRO}000"
+        NOW_MICRO="${NOW_MICRO}000"
+
+        local SEC_DIFF=$(( NOW_SEC - START_SEC ))
+        local MS_DIFF=$(( 10#${NOW_MICRO:0:3} - 10#${START_MICRO:0:3} ))
+
+        if (( MS_DIFF < 0 )); then
+            (( SEC_DIFF -= 1 ))
+            (( MS_DIFF += 1000 ))
+        fi
+        
+        local ELAPSED_MS=$(( SEC_DIFF * 1000 + MS_DIFF ))
+
+        if (( ELAPSED_MS > 0 )); then
+            local D=$(( ELAPSED_MS / 86400000 ))
+            local H=$(( (ELAPSED_MS % 86400000) / 3600000 ))
+            local M=$(( (ELAPSED_MS % 3600000) / 60000 ))
+            local S=$(( (ELAPSED_MS % 60000) / 1000 ))
+            local MS=$(( ELAPSED_MS % 1000 ))
+
+            local FORMATTED_DUR=""
+            if (( D > 0 )); then FORMATTED_DUR+="${D}d "; fi
+            if (( H > 0 || D > 0 )); then FORMATTED_DUR+="${H}h "; fi
+            if (( M > 0 || H > 0 || D > 0 )); then FORMATTED_DUR+="${M}m "; fi
+            if (( S > 0 || M > 0 || H > 0 || D > 0 )); then FORMATTED_DUR+="${S}s "; fi
+            if (( H == 0 && D == 0 )); then FORMATTED_DUR+="${MS}ms"; fi
+            if [[ -z "$FORMATTED_DUR" ]]; then FORMATTED_DUR="0ms"; fi
+
+            FORMATTED_DUR=${FORMATTED_DUR% }
+            DURATION_STR=" 󰔟 ${FORMATTED_DUR}"
         fi
     fi
     __PURR_CMD_START=""
@@ -109,7 +135,7 @@ purrprompt_builder() {
     fi
 
     if [ $EXIT_CODE -ne 0 ]; then
-        STATUS+=" ${OVERLAY}│ ${RED}  ${EXIT_CODE}"
+        STATUS+=" ${OVERLAY}│ ${RED} 󰅙 ${EXIT_CODE}"
     fi
 
     local PROMPT_ARROW="${GREEN}❯${RESET}"
