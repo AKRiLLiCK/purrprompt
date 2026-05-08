@@ -10,18 +10,33 @@
 
 ---
 
-## ![Features](https://img.shields.io/badge/-Features-cba6f7?style=for-the-badge)
+<h2 align="center">
+  <img src="https://img.shields.io/badge/-Gallery-f38ba8?style=for-the-badge" alt="Gallery">
+</h2>
 
-| Category | Features |
-| :--- | :--- |
-| **✿ Aesthetics** | **Catppuccin Mocha** palette <br> • Rounded powerline caps <br> • Nerd Font icons <br> • Seamless data bar <br> • Fresh launch `pfetch` integration |
-| **⌬ Intelligence** | **Git integration** (dirty state detection) <br> • **Millisecond-precision command timing** <br> • **Background jobs** count <br> • **Exit code** badges |
-| **☇ Performance** | **Pure Bash** (no subshells/binaries) <br> • **Zero-Redraw Autocomplete** <br> • State-managed prompt clearing |
-| **⌨ Workflow** | Prefix-based **history search** (`Up`/`Down`) <br> • Case-insensitive **tab completion** <br> • Clean single-row autocomplete interface |
+<div align="center">
+  <!-- Add your screenshots or GIFs here! -->
+  <p><i>Images yet to be added</i></p>
+</div>
 
 ---
 
-## ![Installation](https://img.shields.io/badge/-Installation-94e2d5?style=for-the-badge)
+<h2 align="center">
+  <img src="https://img.shields.io/badge/-Features-cba6f7?style=for-the-badge" alt="Features">
+</h2>
+
+| Category | Features |
+| :--- | :--- |
+| **✿ Aesthetics** | **Catppuccin Mocha** palette <br> • Rounded powerline caps <br> • Nerd Font icons <br> • Seamless data bar <br> • Fresh launch `fastfetch` or `pfetch` integration |
+| **⌬ Intelligence** | **Git integration** (dirty state detection) <br> • **Millisecond-precision command timing** <br> • **Background jobs** count <br> • **Exit code** badges |
+| **☇ Performance** | **Pure Bash** (no subshells/binaries) <br> • **Zero-Redraw Autocomplete** <br> • State-managed prompt clearing |
+| **⌨ Workflow** | Prefix-based **history search** (`Up`/`Down`) <br> • Case-insensitive **tab completion** <br> • Clean single-row autocomplete interface <br> • **Smart spacing** between commands (with native `CTRL+L` support) |
+
+---
+
+<h2 align="center">
+  <img src="https://img.shields.io/badge/-Installation-94e2d5?style=for-the-badge" alt="Installation">
+</h2>
 
 Quick setup to get PurrPrompt running in your terminal:
 
@@ -41,6 +56,8 @@ source ~/.bashrc
 
 ---
 
-## ![License](https://img.shields.io/badge/-License-f9e2af?style=for-the-badge)
+<h2 align="center">
+  <img src="https://img.shields.io/badge/-License-f9e2af?style=for-the-badge" alt="License">
+</h2>
 
 Distributed under the [MIT License](https://mit-license.org/)

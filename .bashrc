@@ -40,7 +40,11 @@ purrprompt_builder() {
     local EXIT_CODE=$?
 
     if [ "$__PURR_STATE" -eq 0 ]; then
-        if command -v pfetch &> /dev/null; then
+        if command -v fastfetch &> /dev/null; then
+            sleep 0.2
+            clear
+            fastfetch
+        elif command -v pfetch &> /dev/null; then
             sleep 0.2
             clear
             pfetch
@@ -89,12 +93,11 @@ purrprompt_builder() {
             if [[ -z "$FORMATTED_DUR" ]]; then FORMATTED_DUR="0ms"; fi
 
             FORMATTED_DUR=${FORMATTED_DUR% }
-            DURATION_STR=" 󰔟 ${FORMATTED_DUR}"
+            DURATION_STR="󰔟 ${FORMATTED_DUR}"
         fi
     fi
     __PURR_CMD_START=""
-
-    # Round powerline caps (U+E0B6 left, U+E0B4 right)
+    
     local RR=$'\uE0B4'
 
     local BG_S0="\[\e[48;2;49;50;68m\]"
@@ -131,11 +134,11 @@ purrprompt_builder() {
 
     local JOB_COUNT=$(jobs -rp 2>/dev/null | wc -l)
     if (( JOB_COUNT > 0 )); then
-        STATUS+=" ${OVERLAY}│ ${LAVENDER} 󰜎 ${JOB_COUNT}"
+        STATUS+=" ${OVERLAY}│ ${LAVENDER}󰜎 ${JOB_COUNT}"
     fi
 
     if [ $EXIT_CODE -ne 0 ]; then
-        STATUS+=" ${OVERLAY}│ ${RED} 󰅙 ${EXIT_CODE}"
+        STATUS+=" ${OVERLAY}│ ${RED}󰅙 ${EXIT_CODE}"
     fi
 
     local PROMPT_ARROW="${GREEN}❯${RESET}"
@@ -143,10 +146,9 @@ purrprompt_builder() {
         PROMPT_ARROW="${RED}❯${RESET}"
     fi
 
-    local FIRST_LINE="${BG_S0}${TEAL}  \A ${OVERLAY}│ ${PINK} \u ${OVERLAY}@ ${BLUE}󰒋 \h ${OVERLAY}│ ${YELLOW} \w${GIT_SEG}${STATUS} ${RESET}${FG_S0}${RR}"
-    printf "%s\n" "${FIRST_LINE@P}"
+    local FIRST_LINE="${BG_S0}${TEAL}  \A ${OVERLAY}│ ${PINK} \u ${OVERLAY}@ ${BLUE}󰒋 \h ${OVERLAY}│ ${YELLOW} \w${GIT_SEG}${STATUS} ${RESET}${FG_S0}${RR}"
 
-    PS1="${PROMPT_ARROW} "
+    PS1="${FIRST_LINE}\n${PROMPT_ARROW} "
 }
 
 PROMPT_COMMAND=purrprompt_builder
