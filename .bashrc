@@ -1,13 +1,13 @@
 # ────────────────────────────────────────────────────────────────────────
-#   ▄▄▄▄▄▄                                                  
-#  █▀██▀▀▀█▄                                              █▄ 
-#    ██▄▄▄█▀     ▄    ▄         ▄                        ▄██▄▄
-#    ██▀▀▀██ ██ ████▄████▄████▄ ████▄▄███▄ ███▄███▄ ████▄ ██
-#  ▄ ██   ██ ██ ██   ██   ██ ██ ██   ██ ██ ██ ██ ██ ██ ██ ██ 
-#  ▀██▀  ▄▀██▀█▄█▀  ▄█▀  ▄████▀▄█▀   ▀███▀▄██ ██ ▀█▄████▀▄██ 
-#                         ██                        ██       
-#                         ▀                         ▀        
+#  ____                 ____                           _ 
+# |  _ \ _   _ _ __ _ _|  _ \ _ __ ___  _ __ ___  _ __| |_ 
+# | |_) | | | | '__| '__| |_) | '__/ _ \| '_ ` _ \| '_ \ __|
+# |  __/| |_| | |  | |  |  __/| | | (_) | | | | | | |_) | |_ 
+# |_|    \__,_|_|  |_|  |_|   |_|  \___/|_| |_| |_| .__/ \__|
+#                                                 |_| 
 # ────────────────────────────────────────────────────────────────────────
+
+eval "$(fzf --bash)"
 
 shopt -s checkwinsize histappend
 export HISTCONTROL=ignoreboth:erasedups
@@ -24,6 +24,7 @@ bind 'set menu-complete-display-prefix on' 2>/dev/null
 export LS_COLORS=""
 __PURR_STATE=0
 __PURR_CMD_START=""
+__PURR_GIT_CACHE="/tmp/.purr_git_cache_$$"
 
 alias ls='ls --color=auto --group-directories-first -h'
 alias ll='ls -l'
@@ -35,6 +36,51 @@ alias clear='clear; __PURR_STATE=2'
 alias c='clear'
 
 PS0='${__PURR_CMD_START:=$EPOCHREALTIME}\e[1K\r'
+
+purrprompt() {
+    local MAUVE="\e[38;2;203;166;247m"
+    local TEAL="\e[38;2;148;226;213m"
+    local OVERLAY="\e[38;2;88;91;112m"
+    local RESET="\e[0m"
+    
+    echo -e "${MAUVE}󰄛 PurrPrompt Features & Shortcuts${RESET}\n"
+    
+    echo -e "${TEAL}Commands:${RESET}"
+    echo -e "  ${OVERLAY}󰃢 c, clear${RESET}    Clear terminal and display pfetch"
+    echo -e "  ${OVERLAY}󰋖 purrprompt${RESET}  Show this help menu\n"
+    
+    echo -e "${TEAL}Fuzzy Finding (fzf):${RESET}"
+    echo -e "  ${OVERLAY}󰋚 ⌃R${RESET}          Search command history"
+    echo -e "  ${OVERLAY}󰈔 ⌃T${RESET}          Search files in current tree"
+    echo -e "  ${OVERLAY}󰉋 ⌥C${RESET}          Search and cd into directory\n"
+    
+    echo -e "${TEAL}Prompt Indicators:${RESET}"
+    echo -e "  ${OVERLAY}󰔟${RESET}  Execution duration (ms/s/m/h/d)"
+    echo -e "  ${OVERLAY}${RESET}  Asynchronous Git branch (* = dirty)"
+    echo -e "  ${OVERLAY}󰜎${RESET}  Background jobs count"
+    echo -e "  ${OVERLAY}󰅙${RESET}  Non-zero exit code"
+}
+
+__purr_async_git_worker() {
+    local target_dir="$PWD"
+    local tmp_file="${__PURR_GIT_CACHE}.${EPOCHREALTIME}.tmp"
+    local branch
+    
+    branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+    if [[ -z "$branch" ]]; then
+        echo "${target_dir}|" > "$tmp_file"
+        mv -f "$tmp_file" "$__PURR_GIT_CACHE"
+        return
+    fi
+
+    local dirty="0"
+    if ! git diff-index --quiet HEAD -- 2>/dev/null || [[ -n $(git ls-files --others --exclude-standard 2>/dev/null) ]]; then
+        dirty="1"
+    fi
+
+    echo "${target_dir}|${branch}|${dirty}" > "$tmp_file"
+    mv -f "$tmp_file" "$__PURR_GIT_CACHE"
+}
 
 purrprompt_builder() {
     local EXIT_CODE=$?
@@ -74,7 +120,7 @@ purrprompt_builder() {
             (( SEC_DIFF -= 1 ))
             (( MS_DIFF += 1000 ))
         fi
-        
+
         local ELAPSED_MS=$(( SEC_DIFF * 1000 + MS_DIFF ))
 
         if (( ELAPSED_MS > 0 )); then
@@ -97,7 +143,11 @@ purrprompt_builder() {
         fi
     fi
     __PURR_CMD_START=""
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 1ed7453 (update)
     local RR=$'\uE0B4'
 
     local BG_S0="\[\e[48;2;49;50;68m\]"
@@ -116,16 +166,20 @@ purrprompt_builder() {
     local RESET="\[\e[0m\]"
 
     local GIT_SEG=""
-    local BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
-    if [ -n "$BRANCH" ]; then
-        local GIT_COLOR="${MAUVE}"
-        local GIT_ICON=""
-        if [[ -n $(git status --porcelain 2>/dev/null) ]]; then
-            GIT_COLOR="${PEACH}"
-            GIT_ICON=" *"
+    if [[ -f "$__PURR_GIT_CACHE" ]]; then
+        IFS='|' read -r c_dir c_branch c_dirty < "$__PURR_GIT_CACHE"
+        if [[ "$c_dir" == "$PWD" && -n "$c_branch" ]]; then
+            local GIT_COLOR="${MAUVE}"
+            local GIT_ICON=""
+            if [[ "$c_dirty" == "1" ]]; then
+                GIT_COLOR="${PEACH}"
+                GIT_ICON=" *"
+            fi
+            GIT_SEG=" ${OVERLAY}│ ${GIT_COLOR} ${c_branch}${GIT_ICON}"
         fi
-        GIT_SEG=" ${OVERLAY}│ ${GIT_COLOR} ${BRANCH}${GIT_ICON}"
     fi
+
+    ( __purr_async_git_worker >/dev/null 2>&1 & )
 
     local STATUS=""
     if [[ -n "$DURATION_STR" ]]; then
@@ -141,13 +195,22 @@ purrprompt_builder() {
         STATUS+=" ${OVERLAY}│ ${RED}󰅙 ${EXIT_CODE}"
     fi
 
+    local HINTS=" ${OVERLAY}│ ${MAUVE}󰄛 󰃢 c · 󰋚 ⌃R · 󰈔 ⌃T · 󰉋 ⌥C · 󰋖 purrprompt"
+
     local PROMPT_ARROW="${GREEN}❯${RESET}"
     if [ $EXIT_CODE -ne 0 ]; then
         PROMPT_ARROW="${RED}❯${RESET}"
     fi
 
+<<<<<<< HEAD
     local FIRST_LINE="${BG_S0}${TEAL}  \A ${OVERLAY}│ ${PINK} \u ${OVERLAY}@ ${BLUE}󰒋 \h ${OVERLAY}│ ${YELLOW} \w${GIT_SEG}${STATUS} ${RESET}${FG_S0}${RR}"
 
+=======
+    local FIRST_LINE="${BG_S0}${TEAL}  \A ${OVERLAY}│ ${PINK} \u ${OVERLAY}@ ${BLUE}󰒋 \h ${OVERLAY}│ ${YELLOW} \w${GIT_SEG}${STATUS}${HINTS} ${RESET}${FG_S0}${RR}"
+    
+    # Combine FIRST_LINE and the arrow into a single PS1 variable
+    # so Readline natively redraws both lines on Ctrl+L
+>>>>>>> 1ed7453 (update)
     PS1="${FIRST_LINE}\n${PROMPT_ARROW} "
 }
 
