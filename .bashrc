@@ -247,7 +247,7 @@ purrprompt_builder() {
     fi
 
     local ALIAS_NAMES
-    ALIAS_NAMES=$(alias | sed 's/^alias \([^=]*\)=.*/\1/' | tr '\n' '·' | sed 's/·$//; s/·/ · /g')
+    ALIAS_NAMES=$(alias | sed 's/^alias \([^=]*\)=.*/\1/' | paste -sd, | sed 's/,/ · /g')
     local HINTS=" ${OVERLAY}│ ${MAUVE}󰄛 󰃢 ${ALIAS_NAMES} ${OVERLAY}│ 󰋚 ⌃R · 󰈔 ⌃T · 󰉋 ⌥C · 󰋖 purrprompt"
 
     local PROMPT_ARROW="${GREEN}❯${RESET}"
