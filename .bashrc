@@ -70,8 +70,16 @@ purrprompt() {
     
     echo -e "${MAUVE}󰄛 PurrPrompt Features & Shortcuts${RESET}\n"
     
+    echo -e "${TEAL}Aliases:${RESET}"
+    while IFS= read -r line; do
+        local aname="${line%%=*}"
+        local aval="${line#*=}"
+        aname="${aname#alias }"
+        aval="${aval#\'}" ; aval="${aval%\'}"
+        echo -e "  ${OVERLAY}󰃢 ${aname}${RESET}  →  ${OVERLAY}${aval}${RESET}"
+    done < <(alias)
+    echo ""
     echo -e "${TEAL}Commands:${RESET}"
-    echo -e "  ${OVERLAY}󰃢 c, clear${RESET}    Clear terminal and display pfetch"
     echo -e "  ${OVERLAY}󰋖 purrprompt${RESET}  Show this help menu\n"
     
     echo -e "${TEAL}Fuzzy Finding (fzf):${RESET}"
@@ -238,7 +246,9 @@ purrprompt_builder() {
         STATUS+=" ${OVERLAY}│ ${RED}󰅙 ${EXIT_CODE}"
     fi
 
-    local HINTS=" ${OVERLAY}│ ${MAUVE}󰄛 󰃢 c · 󰋚 ⌃R · 󰈔 ⌃T · 󰉋 ⌥C · 󰋖 purrprompt"
+    local ALIAS_NAMES
+    ALIAS_NAMES=$(alias | sed 's/^alias \([^=]*\)=.*/\1/' | tr '\n' '·' | sed 's/·$//; s/·/ · /g')
+    local HINTS=" ${OVERLAY}│ ${MAUVE}󰄛 󰃢 ${ALIAS_NAMES} ${OVERLAY}│ 󰋚 ⌃R · 󰈔 ⌃T · 󰉋 ⌥C · 󰋖 purrprompt"
 
     local PROMPT_ARROW="${GREEN}❯${RESET}"
     if [ $EXIT_CODE -ne 0 ]; then

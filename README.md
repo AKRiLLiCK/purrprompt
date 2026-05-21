@@ -26,6 +26,7 @@
 | ⏱️ | **Exec timer** | Tracks command duration down to the millisecond |
 | 🔍 | **fzf integration** | Pre-wired fuzzy history, file, and directory search |
 | 🧹 | **Smart clear** | `c` / `clear` resets the screen and runs `pfetch` or `fastfetch` |
+| 📋 | **Alias bar** | The prompt bar dynamically lists every defined shell alias |
 | 🐾 | **Pure Bash** | No Starship, no Oh-My-Posh — just a `.bashrc` |
 
 ## Prerequisites
@@ -74,7 +75,7 @@ Toggle your system theme — the prompt follows on the very next command. No res
 | `Ctrl+T` | Fuzzy search files (pastes path) |
 | `Alt+C` | Fuzzy search & `cd` into directory |
 
-> **Tip** — type `purrprompt` in your terminal for the built-in cheat sheet!
+> **Tip** — type `purrprompt` in your terminal for the built-in cheat sheet! It dynamically lists every alias with its expansion.
 
 ## Architecture
 
