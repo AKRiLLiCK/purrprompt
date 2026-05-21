@@ -1,80 +1,87 @@
-# PurrPrompt 󰄛
+<p align="center">
+  <img src="logo.svg" width="128" alt="PurrPrompt logo" />
+</p>
 
-A highly optimized, dependency-lean Bash prompt built with the Catppuccin color palette. It features adaptive system theme detection, non-blocking asynchronous Git status, high-precision execution timing, and native integration with `fzf` for fuzzy finding.
+<h1 align="center">PurrPrompt</h1>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/shell-bash-89b4fa?style=flat-square&logo=gnubash&logoColor=white" alt="Bash" />
+  <img src="https://img.shields.io/badge/theme-catppuccin-cba6f7?style=flat-square&logo=catppuccin&logoColor=white" alt="Catppuccin" />
+  <img src="https://img.shields.io/badge/deps-zero-a6e3a1?style=flat-square" alt="Zero dependencies" />
+  <img src="https://img.shields.io/badge/license-MIT-f9e2af?style=flat-square" alt="MIT" />
+</p>
+
+<p align="center">
+  <em>A tiny, purring Bash prompt with Catppuccin colors, async Git, and a love for naps.</em>
+</p>
+
+---
 
 ## Features
 
-* **Adaptive System Theme**: Automatically detects your GNOME color-scheme (`gsettings`) and switches between **Catppuccin Latte** (light) and **Catppuccin Mocha** (dark) palettes in real-time — no restart or re-sourcing required.
-* **Asynchronous Git Status**: Implements a Stale-While-Revalidate (SWR) caching mechanism. Git index queries (`git diff-index`) run in an isolated background subshell, guaranteeing zero rendering latency even in massive monorepos.
-* **Execution Timer**: Accurately tracks command duration down to the millisecond (`ms`, `s`, `m`, `h`, `d`).
-* **Fuzzy Finding Integration**: Pre-configured hooks for `fzf` command and file navigation.
-* **Stateful Clear**: Custom clear alias (`c`) that seamlessly integrates with `pfetch` on execution.
-* **Native Readline Compatibility**: Safely maps multi-line structures to `PS1` to prevent buffer corruption during `Ctrl+L` (clear-screen) operations.
-* **Minimalist Footprint**: Pure Bash logic. No compiled prompt engines (like Starship or Oh-My-Posh) required.
+| | Feature | What it does |
+|---|---|---|
+| 🎨 | **Adaptive theme** | Auto-detects GNOME light/dark mode; switches between Catppuccin Latte & Mocha instantly |
+| 🌿 | **Async Git** | Stale-while-revalidate cache — zero rendering latency, even in huge repos |
+| ⏱️ | **Exec timer** | Tracks command duration down to the millisecond |
+| 🔍 | **fzf integration** | Pre-wired fuzzy history, file, and directory search |
+| 🧹 | **Smart clear** | `c` / `clear` resets the screen and runs `pfetch` or `fastfetch` |
+| 🐾 | **Pure Bash** | No Starship, no Oh-My-Posh — just a `.bashrc` |
 
 ## Prerequisites
 
-To render the prompt correctly and utilize all features, you must have the following installed:
+| Tool | Why |
+|---|---|
+| [Nerd Font](https://www.nerdfonts.com/) | Prompt icons |
+| [`fzf`](https://github.com/junegunn/fzf) | Fuzzy finding |
+| `git` | Branch & dirty-state info |
+| `gsettings` | Light/dark detection (ships with GNOME) |
+| `pfetch` / `fastfetch` | *(optional)* Shown on clear |
 
-* A **Nerd Font** (for the UI icons: `󰄛`, ``, `󰔟`, etc.)
-* **`fzf`** (required for the fuzzy finding shortcuts)
-* **`git`** (for repository status)
-* **`gsettings`** (ships with GNOME — used for automatic light/dark theme detection)
-* **`pfetch`** or **`fastfetch`** (optional, triggered when clearing the terminal)
-
-## Installation
-
-1. Clone this repository or copy the `.bashrc` file.
-2. Replace or append the contents to your existing `~/.bashrc`.
-3. Source the file to apply the changes immediately:
+## Install
 
 ```bash
+git clone https://github.com/AKRiLLiCK/purrprompt.git
+cp purrprompt/.bashrc ~/.bashrc   # or append to your existing one
 source ~/.bashrc
 ```
 
 ## Theme Adaptation
 
-PurrPrompt queries the GNOME desktop color-scheme on every prompt render:
+PurrPrompt checks GNOME's color-scheme on every prompt render:
 
-```
-gsettings get org.gnome.desktop.interface color-scheme
-```
+| System scheme | Palette |
+|---|---|
+| `prefer-dark` | **Catppuccin Mocha** |
+| `default` / `prefer-light` | **Catppuccin Latte** |
 
-| System Scheme | Palette Applied |
-| --- | --- |
-| `prefer-dark` | **Catppuccin Mocha** (dark) |
-| `default` / `prefer-light` | **Catppuccin Latte** (light) |
+Toggle your system theme — the prompt follows on the very next command. No restart needed. 🐱
 
-Toggle your system theme at any time — the prompt adapts on the very next command with no manual intervention.
+## Prompt Segments
 
-## Prompt Indicators
+| Indicator | Meaning |
+|---|---|
+| ⏱️ duration | Previous command took > 0 ms |
+| 🌿 branch `*` | Inside a Git repo (`*` = dirty tree) |
+| 📌 count | Background jobs running |
+| ❌ code | Last command exited non-zero |
 
-The prompt dynamically displays segments based on the current environment state:
+## Keybindings
 
-| Icon | Description | Trigger Condition |
-| --- | --- | --- |
-| `󰔟` | **Execution Timer** | Displays if the previous command took > 0ms. |
-| `` | **Git Branch** | Displays when inside a Git repository. Adds `*` if the working tree is dirty. |
-| `󰜎` | **Background Jobs** | Displays the count of active background jobs (`jobs -rp`). |
-| `󰅙` | **Exit Code** | Displays the numeric exit code if the previous command failed. |
+| Keys | Action |
+|---|---|
+| `Ctrl+R` | Fuzzy search command history |
+| `Ctrl+T` | Fuzzy search files (pastes path) |
+| `Alt+C` | Fuzzy search & `cd` into directory |
 
-## Shortcuts & Keybindings
+> **Tip** — type `purrprompt` in your terminal for the built-in cheat sheet!
 
-PurrPrompt includes a built-in quick reference menu. Type `purrprompt` in your terminal to view it, or check the embedded hints on the right side of the prompt bar.
+## Architecture
 
-### Commands
+- **Theme detection** — `__purr_detect_theme` calls `gsettings` once per render; both the prompt and the help command share the result.
+- **Git polling** — Uses `git diff-index` + `git ls-files` instead of `git status --porcelain` to minimize I/O.
+- **Eventual consistency** — The async worker updates a cache file; changes appear one command after they occur.
 
-* `c` or `clear`: Clears the terminal and executes `pfetch` / `fastfetch`.
-* `purrprompt`: Prints the feature and shortcut cheat sheet.
+---
 
-### Fuzzy Finding (via `fzf`)
-
-* `⌃R` (**Ctrl + R**): Fuzzy search your command history.
-* `⌃T` (**Ctrl + T**): Fuzzy search files in the current directory tree (pastes path into prompt).
-* `⌥C` (**Alt + C**): Fuzzy search directories and instantly `cd` into the selection.
-
-## Architecture Notes
-
-* **Theme Detection**: The `__purr_detect_theme` function runs `gsettings` once per prompt render. Both `purrprompt_builder` (the prompt itself) and `purrprompt` (the help command) use the detected theme to select the correct palette.
-* **Git Polling**: The prompt intentionally avoids `git status --porcelain` in favor of lower-level index checks (`git diff-index` and `git ls-files`). This significantly reduces I/O overhead.
-* **Eventual Consistency**: Because the Git check is asynchronous, branch changes or commits are reflected exactly one command *after* the change occurs. The prompt renders instantly using the last known cached state while the background worker updates the cache for the next render.
+<p align="center"><sub>made with 💜 and cat hair</sub></p>
