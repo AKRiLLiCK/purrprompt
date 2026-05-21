@@ -14,8 +14,8 @@ export HISTCONTROL=ignoreboth:erasedups
 export HISTSIZE=10000
 export HISTFILESIZE=20000
 
-bind '"\e[A": history-search-backward' 2>/dev/null
-bind '"\e[B": history-search-forward' 2>/dev/null
+bind '"\\e[A": history-search-backward' 2>/dev/null
+bind '"\\e[B": history-search-forward' 2>/dev/null
 bind 'set colored-stats on' 2>/dev/null
 bind 'set show-all-if-ambiguous on' 2>/dev/null
 bind 'set completion-ignore-case on' 2>/dev/null
@@ -37,10 +37,35 @@ alias c='clear'
 
 PS0='${__PURR_CMD_START:=$EPOCHREALTIME}\e[1K\r'
 
+# ── Theme Detection ─────────────────────────────────────────────────────
+# Detects the system color-scheme from GNOME / XDG and caches the result
+# so that only a fast variable check runs on every prompt render.
+# The cache is refreshed once per prompt to track live toggling.
+
+__purr_detect_theme() {
+    if command -v gsettings &> /dev/null; then
+        local scheme
+        scheme=$(gsettings get org.gnome.desktop.interface color-scheme 2>/dev/null)
+        if [[ "$scheme" == *"prefer-dark"* ]]; then
+            __PURR_THEME="dark"
+            return
+        fi
+    fi
+    __PURR_THEME="light"
+}
+
 purrprompt() {
-    local MAUVE="\e[38;2;203;166;247m"
-    local TEAL="\e[38;2;148;226;213m"
-    local OVERLAY="\e[38;2;88;91;112m"
+    # Adapt colors to current theme
+    __purr_detect_theme
+    if [[ "$__PURR_THEME" == "dark" ]]; then
+        local MAUVE="\e[38;2;203;166;247m"
+        local TEAL="\e[38;2;148;226;213m"
+        local OVERLAY="\e[38;2;88;91;112m"
+    else
+        local MAUVE="\e[38;2;136;57;239m"
+        local TEAL="\e[38;2;23;146;153m"
+        local OVERLAY="\e[38;2;124;127;147m"
+    fi
     local RESET="\e[0m"
     
     echo -e "${MAUVE}󰄛 PurrPrompt Features & Shortcuts${RESET}\n"
@@ -56,7 +81,7 @@ purrprompt() {
     
     echo -e "${TEAL}Prompt Indicators:${RESET}"
     echo -e "  ${OVERLAY}󰔟${RESET}  Execution duration (ms/s/m/h/d)"
-    echo -e "  ${OVERLAY}${RESET}  Asynchronous Git branch (* = dirty)"
+    echo -e "  ${OVERLAY}${RESET}  Asynchronous Git branch (* = dirty)"
     echo -e "  ${OVERLAY}󰜎${RESET}  Background jobs count"
     echo -e "  ${OVERLAY}󰅙${RESET}  Non-zero exit code"
 }
@@ -143,26 +168,44 @@ purrprompt_builder() {
         fi
     fi
     __PURR_CMD_START=""
-<<<<<<< HEAD
-    
-=======
 
->>>>>>> 1ed7453 (update)
+    # ── Detect system theme and set palette ──────────────────────────────
+    __purr_detect_theme
+
     local RR=$'\uE0B4'
 
-    local BG_S0="\[\e[48;2;49;50;68m\]"
-    local FG_S0="\[\e[38;2;49;50;68m\]"
+    if [[ "$__PURR_THEME" == "dark" ]]; then
+        # ── Catppuccin Mocha (dark) ──────────────────────────────────────
+        local BG_S0="\[\e[48;2;49;50;68m\]"
+        local FG_S0="\[\e[38;2;49;50;68m\]"
 
-    local PINK="\[\e[38;2;245;194;231m\]"
-    local MAUVE="\[\e[38;2;203;166;247m\]"
-    local RED="\[\e[38;2;243;139;168m\]"
-    local PEACH="\[\e[38;2;250;179;135m\]"
-    local YELLOW="\[\e[38;2;249;226;175m\]"
-    local GREEN="\[\e[38;2;166;227;161m\]"
-    local TEAL="\[\e[38;2;148;226;213m\]"
-    local BLUE="\[\e[38;2;137;180;250m\]"
-    local LAVENDER="\[\e[38;2;180;190;254m\]"
-    local OVERLAY="\[\e[38;2;88;91;112m\]"
+        local PINK="\[\e[38;2;245;194;231m\]"
+        local MAUVE="\[\e[38;2;203;166;247m\]"
+        local RED="\[\e[38;2;243;139;168m\]"
+        local PEACH="\[\e[38;2;250;179;135m\]"
+        local YELLOW="\[\e[38;2;249;226;175m\]"
+        local GREEN="\[\e[38;2;166;227;161m\]"
+        local TEAL="\[\e[38;2;148;226;213m\]"
+        local BLUE="\[\e[38;2;137;180;250m\]"
+        local LAVENDER="\[\e[38;2;180;190;254m\]"
+        local OVERLAY="\[\e[38;2;88;91;112m\]"
+    else
+        # ── Catppuccin Latte (light) ─────────────────────────────────────
+        local BG_S0="\[\e[48;2;204;208;218m\]"
+        local FG_S0="\[\e[38;2;204;208;218m\]"
+
+        local PINK="\[\e[38;2;234;118;203m\]"
+        local MAUVE="\[\e[38;2;136;57;239m\]"
+        local RED="\[\e[38;2;210;15;57m\]"
+        local PEACH="\[\e[38;2;254;100;11m\]"
+        local YELLOW="\[\e[38;2;223;142;29m\]"
+        local GREEN="\[\e[38;2;64;160;43m\]"
+        local TEAL="\[\e[38;2;23;146;153m\]"
+        local BLUE="\[\e[38;2;30;102;245m\]"
+        local LAVENDER="\[\e[38;2;114;135;253m\]"
+        local OVERLAY="\[\e[38;2;124;127;147m\]"
+    fi
+
     local RESET="\[\e[0m\]"
 
     local GIT_SEG=""
@@ -175,7 +218,7 @@ purrprompt_builder() {
                 GIT_COLOR="${PEACH}"
                 GIT_ICON=" *"
             fi
-            GIT_SEG=" ${OVERLAY}│ ${GIT_COLOR} ${c_branch}${GIT_ICON}"
+            GIT_SEG=" ${OVERLAY}│ ${GIT_COLOR} ${c_branch}${GIT_ICON}"
         fi
     fi
 
@@ -202,15 +245,10 @@ purrprompt_builder() {
         PROMPT_ARROW="${RED}❯${RESET}"
     fi
 
-<<<<<<< HEAD
-    local FIRST_LINE="${BG_S0}${TEAL}  \A ${OVERLAY}│ ${PINK} \u ${OVERLAY}@ ${BLUE}󰒋 \h ${OVERLAY}│ ${YELLOW} \w${GIT_SEG}${STATUS} ${RESET}${FG_S0}${RR}"
-
-=======
     local FIRST_LINE="${BG_S0}${TEAL}  \A ${OVERLAY}│ ${PINK} \u ${OVERLAY}@ ${BLUE}󰒋 \h ${OVERLAY}│ ${YELLOW} \w${GIT_SEG}${STATUS}${HINTS} ${RESET}${FG_S0}${RR}"
     
     # Combine FIRST_LINE and the arrow into a single PS1 variable
     # so Readline natively redraws both lines on Ctrl+L
->>>>>>> 1ed7453 (update)
     PS1="${FIRST_LINE}\n${PROMPT_ARROW} "
 }
 
